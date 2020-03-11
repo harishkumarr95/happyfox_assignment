@@ -45,6 +45,8 @@ def get_mails():
             query = 'SELECT id, mail_from, mail_subject, mail_date, mail_message, mail_to from mails where is_checked = 0;'
             get_mail = cursor.execute(query)
             mails = cursor.fetchall()
+            query = 'UPDATE TABLE mails SET is_checked = 1;'
+            cursor.execute(query)
             db_connection.close()
             return mails
     except Exception as ex:

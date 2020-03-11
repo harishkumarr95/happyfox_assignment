@@ -5,9 +5,9 @@ import database_connection as db
 
 import check_rule as rule
 
-#SCOPES = 'https://www.googleapis.com/auth/gmail.modify'
+SCOPES = 'https://www.googleapis.com/auth/gmail.modify'
 
-SCOPES = 'https://mail.google.com/'
+#SCOPES = 'https://mail.google.com/'
 store = file.Storage('token.json')
 creds = store.get()
 if not creds or creds.invalid:
@@ -21,31 +21,11 @@ def perform_action(mail_id, mail_move_to, mail_mark_as):
 
         results = service.users().messages().modify(userId='me',id = mail_id, body = label_json).execute()
         print(results)
-        #POST https://www.googleapis.com/gmail/v1/users/me/messages/170c5a2251526e45/modify?key=[YOUR_API_KEY] HTTP/1.1
-
-#Authorization: Bearer [YOUR_ACCESS_TOKEN]
-#Accept: application/json
-#Content-Type: application/json
-
-#{
-#  "addLabelIds": [
-#    "TRASH"
-#  ],
-#  "removeLabelIds": []
-#}
 
     except Exception as identifier:
         print(identifier)
 
 def main():
-
-#    store = file.Storage('token.json')
-#    creds = store.get()
-#    if not creds or creds.invalid:
-#        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-#        creds = tools.run_flow(flow, store)
-#    service = build('gmail', 'v1', http=creds.authorize(Http()))
-
     # Call the Gmail API to fetch INBOX
     results = service.users().messages().list(userId='me',labelIds = ['INBOX']).execute()
     messages = results.get('messages', [])
