@@ -69,33 +69,41 @@ def check_predicates(mail):
             else:
                 subject_mail = False
 
+            add_labels = []
+            remove_labels = []
+
             if rule_details['rule_predicate'].lower() == 'all':
                 if from_mail and date_mail and subject_mail:
                     print('All rules met')
-                    return [mail_id, (rule['move_to'], rule['mark_as'])]
+                    if rule['add_labels']:
+                        add_labels = rule['add_labels']
+                    if rule['remove_labels']:
+                        remove_labels = rule['remove_labels']
+                    return mail_id, add_labels, remove_labels
                 else:
                     print('Rules not met')
-                    return [False, (rule['move_to'], rule['mark_as'])]
+                    return False, add_labels, remove_labels
 
             elif rule_details['rule_predicate'].lower() == 'any':
                 if from_mail or date_mail or subject_mail:
                     print('Any rule met')
-                    return [mail_id, (rule['move_to'], rule['mark_as'])]
+                    if rule['add_labels']:
+                        add_labels = rule['add_labels']
+                    if rule['remove_labels']:
+                        remove_labels = rule['remove_labels']
+                    return mail_id, add_labels, remove_labels
                 else:
                     print('Rules not met')
-                    return [False, (rule['move_to'], rule['mark_as'])]
+                    return False, add_labels, remove_labels
 
 def check_mail():
     try:
         mails = db.get_mails()
         if mails:
             for mail in mails:
-                mail_id, mail_rule = check_predicates(mail)
-                if mail_rule:
-                    return mail_id, mail_rule
-                else:
-                    print('Rule not met')
-                    return mail_id, mail_rule
+                print('here')
+                mail_id, add_labels, remove_labels = check_predicates(mail)
+                return mail_id, add_labels, remove_labels
 
     except Exception as ex:
         print(ex)

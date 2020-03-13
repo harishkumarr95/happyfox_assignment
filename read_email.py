@@ -1,6 +1,8 @@
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
+from apiclient import errors
+
 import database_connection as db
 
 import check_rule as rule
@@ -15,15 +17,28 @@ if not creds or creds.invalid:
     creds = tools.run_flow(flow, store)
 service = build('gmail', 'v1', http=creds.authorize(Http()))
 
-def perform_action(mail_id, mail_move_to, mail_mark_as):
+def perform_action(mail_id, add_labels, remove_labels):
     try:
-        label_json = {'removeLabelIds': [], 'addLabelIds': [str(mail_move_to), str(mail_mark_as)]}
 
-        results = service.users().messages().modify(userId='me',id = mail_id, body = label_json).execute()
-        print(results)
+        label_json = { }
 
-    except Exception as identifier:
-        print(identifier)
+        if len(add_labels) != 0:
+            label_json['addLabelIds'] = []
+            label_json['addLabelIds'] = add_labels
+        if len(remove_labels) != 0:
+            label_json['removeLabelIds'] = []
+            label_json['removeLabelIds'] = remove_labels
+        if label_json:
+            results = service.users().messages().modify(userId='me',id = mail_id, body = label_json).execute()
+            print(results)
+            return True
+        else:
+            print('Add some actions to perform')
+            return False
+
+    except errors.HttpError as error:
+        print(error)
+        return False
 
 def main():
     # Call the Gmail API to fetch INBOX
@@ -67,9 +82,10 @@ def main():
         confirm_check = input( 'Would you like python to check the messages and do actions on them : (y/n)' )
 
         if confirm_check.lower() == 'y':
-            [mail_id, (mail_move_to, mail_mark_as)] = rule.check_mail()
+            mail_id, add_labels, remove_labels = rule.check_mail()
+            print(mail_id)
             if mail_id:
-                action = perform_action(mail_id, mail_move_to, mail_mark_as)
+                action = perform_action(mail_id, add_labels, remove_labels)
                 if action:
                     print('Mail moved Successfully')
                     return
