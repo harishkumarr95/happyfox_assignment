@@ -3,6 +3,7 @@ import config
 import database_connection as db
 from datetime import datetime
 
+#Rules in the JSON file
 def get_rules(rules_filename):
     try:
         with open (rules_filename, 'r') as rules:
@@ -13,6 +14,7 @@ def get_rules(rules_filename):
         print(ex)
         return False
 
+#funcion to check the date range
 def check_date(rule_date_predicate, date_value, date_mails):
     if rule_date_predicate.lower() == 'less than':
         if datetime.now().timestamp() - date_value < date_mails:
@@ -33,6 +35,7 @@ def check_date(rule_date_predicate, date_value, date_mails):
         date_mail = False
         return date_mail
 
+#function to check the rule predicates with the mail contents
 def check_predicates(mail):
         rules = get_rules(config.rules_filename)
         mail_id = mail[0]
@@ -96,6 +99,7 @@ def check_predicates(mail):
                     print('Rules not met')
                     return False, add_labels, remove_labels
 
+#getting mails
 def check_mail():
     try:
         mails = db.get_mails()

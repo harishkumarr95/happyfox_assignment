@@ -17,6 +17,7 @@ if not creds or creds.invalid:
     creds = tools.run_flow(flow, store)
 service = build('gmail', 'v1', http=creds.authorize(Http()))
 
+#To perform the rule actions 
 def perform_action(mail_id, add_labels, remove_labels):
     try:
 
@@ -64,6 +65,7 @@ def main():
 
         db_write = False
 
+        #from the message list storing to database
         for message in messages[:message_len]:
             try:
                 msg = service.users().messages().get(userId='me', id=message['id']).execute()
@@ -72,18 +74,21 @@ def main():
                 email_to = [ v for v in msg['payload']['headers'] if v['name'] == 'To' ][0]['value']
                 email_subject = [ v for v in msg['payload']['headers'] if v['name'] == 'Subject' ][0]['value']
                 email_date = int( msg['internalDate'] )/1000
-                email_message = [ v['body']['data'] for v in msg['payload']['parts'] ][0]
+                try:
+                    email_message = [ v['body']['data'] for v in msg['payload']['parts'] ][0]
+                except KeyError:
+                    email_message = msg['payload']['body']['data']
             except Exception as ex:
                 print(ex)
             db_write = db.write_mails_to_db(email_id, email_date, email_from, email_subject, email_message, email_to)
 
+    #checking the mails for the rules
     if db_write:
         db_write = False
         confirm_check = input( 'Would you like python to check the messages and do actions on them : (y/n)' )
 
         if confirm_check.lower() == 'y':
             mail_id, add_labels, remove_labels = rule.check_mail()
-            print(mail_id)
             if mail_id:
                 action = perform_action(mail_id, add_labels, remove_labels)
                 if action:

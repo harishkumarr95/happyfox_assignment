@@ -1,11 +1,12 @@
 import mysql.connector as mysqldb
 
+#connecting to the Database
 def connect_to_db():
     try:
         db_connection = mysqldb.connect(
-        host = 'localhost',
-        user = 'root',
-        passwd = 'root'
+        host = config.database_host,
+        user = config.database_user,
+        passwd = config.database_password
         )
         cursor = db_connection.cursor()
         query = 'CREATE DATABASE IF NOT EXISTS happyfox_assignment'
@@ -17,6 +18,7 @@ def connect_to_db():
         print(ex)
         return False, False
 
+#storing the mails in the database
 def write_mails_to_db(email_id, email_date, email_from, email_subject, email_message, email_to):    
     try:
         db_connection, cursor = connect_to_db()
@@ -38,6 +40,7 @@ def write_mails_to_db(email_id, email_date, email_from, email_subject, email_mes
         print(ex)
         return False
 
+#fetching mails from the database and updating the checked messages
 def get_mails():
     try:
         db_connection, cursor = connect_to_db()
@@ -45,8 +48,9 @@ def get_mails():
             query = 'SELECT id, mail_from, mail_subject, mail_date, mail_message, mail_to from mails where is_checked = 0;'
             get_mail = cursor.execute(query)
             mails = cursor.fetchall()
-            query = 'UPDATE mails SET is_checked = 1;'
-            cursor.execute(query)
+            ids = [(1, id[0]) for id in mails]
+            cursor.executemany('UPDATE mails SET is_checked = %s WHERE id = %s;', ids)
+            db_connection.commit()
             db_connection.close()
             return mails
     except Exception as ex:
