@@ -6,7 +6,7 @@ Assignment for HappyFox
 
 This project is developed to get a list of mails for the user and process them for rules defined already and move them to appropriate folders using GMail API. 
 
-This project is developed in Python 3.7. OAuth is used to authorize GMail API, Google's official python client for GMail API.
+This project is developed in Python 3.5. OAuth is used to authorize GMail API, Google's official python client for GMail API.
 MySQL is used for storing mails in the database. Rules are stored in a JSON file and it is used for processing the mails in the Database. 
 
 # Installation:
