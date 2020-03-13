@@ -34,10 +34,17 @@ Tested working with Linux system - Ubuntu 16.04 LTS
 
   source <your environment name>/bin/activate
 
+6. Install the prerequisites for the project with,
 
+  pip install -r requirements.txt
+  
+This will install all the prerequisites needed for the project to your environment and we are good to go from here to run the program. 
+  
 # Usage:
 
 1. Enable the GMail API and allow access to your project to use GMail API for getting mails and updating them.
-2. Use the rules.json to create the rules that should be followed for the mails that are fetched from the API.
-3. Run the file read_mail.py to get the mails, store them and then apply the rules on the mails and update the mails.
+2. After enabling the API, download the API credentials and store in a file named credentials.json.
+3. Run the script quickstart.py to get the token.json file in the path.
+4. Create the preferred rules in rules.json that should be followed for the mails that are fetched from the API.
+5. Run the file read_mail.py and enter the number of mails to fetch.
 
